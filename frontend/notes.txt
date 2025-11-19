@@ -1,0 +1,380 @@
+Booking Form. jsx old 
+
+"use client";
+
+import { useState, useEffect, useRef } from "react";
+import BG from "../assets/bg.svg";
+import payment from "../assets/money.png";
+import assured from "../assets/quality.png";
+import disount from "../assets/discount.png";
+import { ArrowLeftRight, Search, MapPin } from "lucide-react";
+
+const cities = [
+  { name: "Mumbai", code: "BOM", airport: "CSMIA, Mumbai" },
+  { name: "Delhi", code: "DEL", airport: "IGI, Delhi" },
+  { name: "Bangalore", code: "BLR", airport: "KIA, Bangalore" },
+  { name: "Chennai", code: "MAA", airport: "CMIA, Chennai" },
+  { name: "Kolkata", code: "CCU", airport: "NSCBI, Kolkata" },
+  { name: "Hyderabad", code: "HYD", airport: "RGIA, Hyderabad" },
+  { name: "Pune", code: "PNQ", airport: "PNQ, Pune" },
+  { name: "Ahmedabad", code: "AMD", airport: "SVP, Ahmedabad" },
+  { name: "Goa", code: "GOI", airport: "GOI, Goa" },
+  { name: "Jaipur", code: "JAI", airport: "JAI, Jaipur" },
+  { name: "Nepal", code: "KTM", airport: "TIA, Kathmandu" },
+  { name: "Dubai", code: "DXB", airport: "DXB, Dubai" },
+  { name: "Singapore", code: "SIN", airport: "SIN, Singapore" },
+  { name: "London", code: "LHR", airport: "LHR, London" },
+  { name: "New York", code: "JFK", airport: "JFK, New York" },
+];
+
+export default function TravelSearchForm() {
+  const [travellers, setTravellers] = useState(6);
+  const [agreedToPolicy, setAgreedToPolicy] = useState(false);
+  const [fromLocation, setFromLocation] = useState("Mumbai");
+  const [toLocation, setToLocation] = useState("Nepal");
+  const [showFromDropdown, setShowFromDropdown] = useState(false);
+  const [showToDropdown, setShowToDropdown] = useState(false);
+  const [fromSearch, setFromSearch] = useState("");
+  const [toSearch, setToSearch] = useState("");
+
+  const fromRef = useRef(null);
+  const toRef = useRef(null);
+
+  const getLocationDetails = (cityName) => {
+    return (
+      cities.find((city) => city.name === cityName) || {
+        name: cityName,
+        airport: "Airport code not found",
+      }
+    );
+  };
+
+  const filterCities = (searchTerm, excludeCity) => {
+    return cities.filter(
+      (city) =>
+        city.name.toLowerCase().includes(searchTerm.toLowerCase()) &&
+        city.name !== excludeCity
+    );
+  };
+
+  const handleLocationSelect = (cityName, isFrom) => {
+    if (isFrom) {
+      setFromLocation(cityName);
+      setShowFromDropdown(false);
+      setFromSearch("");
+    } else {
+      setToLocation(cityName);
+      setShowToDropdown(false);
+      setToSearch("");
+    }
+  };
+
+  const handleLocationExchange = () => {
+    const temp = fromLocation;
+    setFromLocation(toLocation);
+    setToLocation(temp);
+  };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (fromRef.current && !fromRef.current.contains(event.target)) {
+        setShowFromDropdown(false);
+      }
+      if (toRef.current && !toRef.current.contains(event.target)) {
+        setShowToDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
+  const handleSearch = () => {
+    if (agreedToPolicy) {
+      console.log("Searching for flights...", {
+        from: fromLocation,
+        to: toLocation,
+        travellers,
+      });
+      // Add your search logic here
+    }
+  };
+
+  return (
+    <div className="relative z-20 py-10">
+      {/* Background Image with Opacity */}
+      <div
+        className="absolute inset-0 z-10"
+        style={{
+          backgroundImage: `url(${BG})`,
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          opacity: 0.3,
+        }}
+      ></div>
+
+      {/* Booking Form  */}
+      {/* <div className="relative container mx-auto px-4 pb-16">
+        <div className="relative bg-white shadow-md rounded-md z-10 p-4">
+          <div className="flex flex-wrap -mx-2">
+            <div className="w-full sm:w-1/2 xl:w-1/4 px-2 mb-4" ref={fromRef}>
+              <label className="text-sm text-gray-600 mb-1 block">From</label>
+              <div
+                className="space-y-1 cursor-pointer hover:bg-gray-50 rounded transition-colors p-2"
+                onClick={() => {
+                  setShowFromDropdown(!showFromDropdown);
+                  setShowToDropdown(false);
+                }}
+              >
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  {fromLocation}
+                  <MapPin className="w-5 h-5 text-orange-500" />
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {getLocationDetails(fromLocation).airport}
+                </p>
+              </div>
+              {showFromDropdown && (
+                <div className="absolute z-50 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <div className="p-3 border-b border-gray-200">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        value={fromSearch}
+                        onChange={(e) => setFromSearch(e.target.value)}
+                        placeholder="Search cities..."
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto">
+                    {filterCities(fromSearch, toLocation).map((city) => (
+                      <div
+                        key={city.code}
+                        onClick={() => handleLocationSelect(city.name, true)}
+                        className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {city.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {city.airport}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="absolute  sm:left-1/2 sm:top-1/5 lg:top-1/4 lg:left-1/4 left-1/2 top-1/6 transform -translate-x-1/2 -translate-y-1/2 z-30">
+              <button
+                onClick={handleLocationExchange}
+                className="  p-2 rounded-full shadow-lg transition-colors"
+                title="Exchange locations"
+              >
+                <ArrowLeftRight className="w-5 h-5 text-orange-500" />
+              </button>
+            </div>
+
+            <div className="w-full sm:w-1/2 xl:w-1/4 px-5 mb-4" ref={toRef}>
+              <label className="text-sm text-gray-600 mb-1 block">To</label>
+              <div
+                className="space-y-1 cursor-pointer hover:bg-gray-50 rounded transition-colors p-2"
+                onClick={() => {
+                  setShowToDropdown(!showToDropdown);
+                  setShowFromDropdown(false);
+                }}
+              >
+                <h3 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+                  {toLocation}
+                  <MapPin className="w-5 h-5 text-orange-500" />
+                </h3>
+                <p className="text-sm text-gray-500">
+                  {getLocationDetails(toLocation).airport}
+                </p>
+              </div>
+
+              {showToDropdown && (
+                <div className="absolute z-50 mt-1 w-80 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <div className="p-3 border-b border-gray-200">
+                    <div className="relative">
+                      <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                      <input
+                        type="text"
+                        value={toSearch}
+                        onChange={(e) => setToSearch(e.target.value)}
+                        placeholder="Search cities..."
+                        className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-500"
+                        autoFocus
+                      />
+                    </div>
+                  </div>
+                  <div className="max-h-60 overflow-y-auto">
+                    {filterCities(toSearch, fromLocation).map((city) => (
+                      <div
+                        key={city.code}
+                        onClick={() => handleLocationSelect(city.name, false)}
+                        className="p-3 hover:bg-gray-50 cursor-pointer border-b border-gray-100 last:border-b-0"
+                      >
+                        <div className="flex items-center gap-3">
+                          <MapPin className="w-4 h-4 text-gray-400" />
+                          <div>
+                            <div className="font-medium text-gray-900">
+                              {city.name}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {city.airport}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="w-full sm:w-1/2 xl:w-1/4 px-2 mb-4">
+              <label className="text-sm text-gray-600 mb-1 block">Date</label>
+              <p className="text-sm text-gray-500 mb-2">Mark your Journey</p>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="date"
+                  className="text-sm px-2 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 w-full"
+                />
+                <input
+                  type="date"
+                  className="text-sm px-2 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 w-full"
+                />
+              </div>
+            </div>
+
+            <div className="w-full sm:w-1/2 xl:w-1/4 px-2 mb-4">
+              <label className="text-sm text-gray-600 mb-1 block">
+                Travellers
+              </label>
+              <p className="text-sm text-gray-500 mb-2">
+                Who all are travelling?
+              </p>
+              <select
+                value={travellers}
+                onChange={(e) => setTravellers(Number(e.target.value))}
+                className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-500 bg-white"
+              >
+                {[...Array(10).keys()].map((i) => (
+                  <option key={i + 1} value={i + 1}>
+                    {i + 1} {i + 1 === 1 ? "Traveller" : "Travellers"}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          <div className="mt-2 flex justify-center">
+            <div className="bg-orange-500 text-white p-4 rounded-md text-center min-w-[80px]">
+              <div className="text-2xl font-bold">{travellers}</div>
+              <div className="text-sm">Travellers</div>
+            </div>
+          </div>
+
+          <div className="mt-6 border-t border-gray-200 pt-4">
+            <div className="flex items-start space-x-2">
+              <input
+                type="checkbox"
+                id="policy"
+                checked={agreedToPolicy}
+                onChange={(e) => setAgreedToPolicy(e.target.checked)}
+                className="mt-1 h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+              />
+              <label
+                htmlFor="policy"
+                className="text-sm text-gray-600 leading-relaxed cursor-pointer"
+              >
+                I have read all the refund policies. Escape to the ultimate
+                tropical retreat with a luxury beach and resort stay.
+              </label>
+            </div>
+          </div>
+
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={handleSearch}
+              disabled={!agreedToPolicy}
+              className={`w-40 font-semibold py-2 rounded-full shadow-lg transition-colors ${
+                agreedToPolicy
+                  ? "bg-orange-500 hover:bg-orange-600 text-white text-xl"
+                  : "bg-gray-300 text-gray-500 cursor-not-allowed text-xl"
+              }`}
+            >
+              Search
+            </button>
+          </div>
+        </div>
+      </div>   */}
+      {/* Booking Form Ends there */}
+
+      {/* SWT Secureed */}
+      <div className="flex flex-col mt-10 pt-8 mb-2 z-10 relative">
+        <h2 className="text-3xl font-bold italic mb-6 text-center text-red-800">
+          SWT Secure Deals for you
+        </h2>
+
+        <div className="flex flex-wrap justify-center gap-6 sm:gap-10 px-4 pt-10">
+          {/* Card 1 */}
+          <div className="flex items-center gap-3 w-full max-w-[300px] p-4 border-2 border-orange-500 rounded-2xl bg-white">
+            <img
+              src={payment}
+              alt="₹0 Payment"
+              className="w-8 sm:w-8 lg:w-12 h-8 sm:h-8 lg:h-12"
+            />
+            <span className="text-md lg:text-lg font-medium">
+              Book with <span className="font-bold">₹0 payment</span>
+            </span>
+          </div>
+
+          {/* Card 2 */}
+          <div className="flex items-center gap-3 w-full max-w-[300px] p-4 border-2 border-orange-500 rounded-2xl bg-white">
+            <img
+              src={disount}
+              alt="Discount"
+              className="w-8 sm:w-8 lg:w-12 h-8 sm:h-8 lg:h-12"
+            />
+            <span className="text-md lg:text-lg font-medium">
+              Upto <span className="font-bold">70% off</span> on Hotels
+            </span>
+          </div>
+
+          {/* Card 3 */}
+          <div className="flex items-center gap-3 w-full max-w-[300px] p-4 border-2 border-orange-500 rounded-2xl bg-white">
+            <img
+              src={assured}
+              alt="SWT Assured"
+              className="w-8 sm:w-8 lg:w-12 h-8 sm:h-8 lg:h-12"
+            />
+            <span className="text-md lg:text-lg font-medium">
+              <span className="font-bold">SWT</span> assured
+            </span>
+          </div>
+        </div>
+        {/* Centered Image */}
+      <div className="-mt-25 flex justify-center z-10 relative">
+        <img
+          src="../src/assets/3-removebg-preview 1.png"
+          alt=""
+          className="max-w-full sm:max-w-md"
+        />
+      </div>
+      </div>
+    </div>
+  );
+}

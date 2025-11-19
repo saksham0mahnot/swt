@@ -1,0 +1,200 @@
+@import url("https://fonts.googleapis.com/css2?family=Fasthand&display=swap");
+@import "tailwindcss";
+
+@keyframes confetti-fall {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(750px) rotate(720deg);
+    opacity: 0;
+  }
+}
+
+@keyframes confetti-sway {
+  0% {
+    transform: translateX(0);
+  }
+  50% {
+    transform: translateX(20px);
+  }
+  100% {
+    transform: translateX(-20px);
+  }
+}
+
+.animate-confetti {
+  animation: confetti-fall 3.5s ease-out forwards,
+    confetti-sway 2s ease-in-out infinite alternate;
+}
+
+/* Add animation delay classes for staggered effect */
+.animate-confetti:nth-child(2n) {
+  animation-delay: 0.2s;
+}
+
+.animate-confetti:nth-child(3n) {
+  animation-delay: 0.4s;
+}
+
+.animate-confetti:nth-child(4n) {
+  animation-delay: 0.6s;
+}
+
+.animate-confetti:nth-child(5n) {
+  animation-delay: 0.8s;
+}
+
+.confetti-container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.promo-container {
+  position: relative;
+  overflow: hidden;
+}
+
+.font-fasthand {
+  font-family: "Fasthand", cursive;
+}
+
+.custom-dots li button {
+  background: #d1d5db !important;
+  opacity: 0.5;
+  transition: all 0.3s ease;
+}
+
+.custom-dots li.slick-active button {
+  background: #3b82f6 !important;
+  opacity: 1;
+  width: 24px;
+}
+
+/* Set tab text to orange when active */
+.custom-tabs .ant-tabs-tab-active .ant-tabs-tab-btn {
+  color: #ea580c !important;
+}
+
+/* Set tab text to orange on hover */
+.custom-tabs .ant-tabs-tab:hover .ant-tabs-tab-btn {
+  color: #ea580c !important;
+}
+
+/* Set underline color to orange */
+.custom-tabs .ant-tabs-ink-bar {
+  background-color: #ea580c !important;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.animation-delay-300 {
+  animation-delay: 300ms;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+section {
+  scroll-margin-top: 64px;
+}
+
+.footer-container {
+  height: 70%;
+  margin-top: 110px;
+}
+
+@keyframes scroll-x {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-scroll-x {
+  animation: scroll-x 40s linear infinite;
+  display: flex;
+  width: max-content;
+  animation-play-state: running;
+  transition: all 0.5s ease-in-out; /* smooth transition effect */
+}
+
+.animate-scroll-x:hover {
+  animation-play-state: paused;
+}
+
+/* for Coming Soon Page */
+
+@keyframes shake {
+  0% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-8px);
+  }
+  40% {
+    transform: translateX(8px);
+  }
+  60% {
+    transform: translateX(-8px);
+  }
+  80% {
+    transform: translateX(8px);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+
+.shake {
+  animation: shake 0.4s ease-in-out;
+}
+
+/* for AboutSection */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes float-slow {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+.animate-float {
+  animation: float 4s ease-in-out infinite;
+}
+.animate-float-slow {
+  animation: float-slow 6s ease-in-out infinite;
+}
