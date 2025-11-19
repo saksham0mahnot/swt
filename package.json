@@ -19,6 +19,7 @@
     "is-fullwidth-code-point": "^3.0.0",
     "require-directory": "^2.1.1",
     "rxjs": "^7.8.2",
+    "serverless-http": "^4.0.0",
     "shell-quote": "^1.8.3",
     "string-width": "^4.2.3",
     "strip-ansi": "^6.0.1",
@@ -33,7 +34,6 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "concurrently \"npm run dev --prefix backend\" \"npm run dev --prefix frontend\""
-
   },
   "keywords": [],
   "author": "",
