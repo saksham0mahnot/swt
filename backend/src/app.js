@@ -19,6 +19,17 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Backend is running" });
 });
 
+// Manual Seeder Endpoint (For Vercel)
+app.get("/api/seed-coupons", async (req, res) => {
+  try {
+    await seedCoupons();
+    res.status(200).json({ status: "ok", message: "Coupons seeded successfully" });
+  } catch (error) {
+    console.error("Manual seeding failed:", error);
+    res.status(500).json({ status: "error", message: error.message });
+  }
+});
+
 // Immediately-invoked async function to seed coupons on startup (Skip in Vercel)
 if (process.env.VERCEL !== "1") {
   (async () => {
