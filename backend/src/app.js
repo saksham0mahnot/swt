@@ -19,14 +19,16 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Backend is running" });
 });
 
-// Immediately-invoked async function to seed coupons on startup
-(async () => {
-  try {
-    await seedCoupons();
-  } catch (error) {
-    console.error("Seeding failed (non-fatal):", error.message);
-  }
-})();
+// Immediately-invoked async function to seed coupons on startup (Skip in Vercel)
+if (process.env.VERCEL !== "1") {
+  (async () => {
+    try {
+      await seedCoupons();
+    } catch (error) {
+      console.error("Seeding failed (non-fatal):", error.message);
+    }
+  })();
+}
 
 app.use(
   cors({
