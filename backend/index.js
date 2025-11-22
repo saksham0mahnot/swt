@@ -3,6 +3,7 @@ const serverless = require('serverless-http');
 let handler;
 
 module.exports = async (req, res) => {
+  console.log("🚀 Vercel Function Invoked: " + req.url);
   // IMMEDIATE HEALTH CHECK - Bypass app loading to verify Vercel function is alive
   if (req.url.includes('/api/health')) {
     res.statusCode = 200;

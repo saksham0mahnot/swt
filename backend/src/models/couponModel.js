@@ -17,7 +17,6 @@ module.exports = (sequelize, DataTypes) => {
       code: {
         type: DataTypes.STRING,
         allowNull: false,
-        unique: true,
       },
       discount: {
         type: DataTypes.DECIMAL(10, 2),
@@ -42,6 +41,13 @@ module.exports = (sequelize, DataTypes) => {
       modelName: "Coupon",
       timestamps: true,
       underscored: true,
+      indexes: [
+        {
+          unique: true,
+          fields: ["code"],
+          name: "coupons_code_unique", // Explicit name prevents duplicate indexes
+        },
+      ],
     }
   );
 
