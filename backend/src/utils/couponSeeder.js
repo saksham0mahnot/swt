@@ -37,23 +37,17 @@ const syncCoupons = async () => {
       },
     });
 
-    // 2. Add or update coupons from our list
-    for (const coupon of coupons) {
-      // This will find a coupon with the given code, or create it if it doesn't exist.
-      const [dbCoupon, created] = await Coupon.findOrCreate({
-        where: { code: coupon.code },
-        defaults: coupon,
-      });
-
-      // If the coupon already existed, you might want to update it
-      if (!created) {
-        await dbCoupon.update(coupon);
-      }
-    }
+    // 2. Bulk Create or Update coupons
+    // This is much faster than looping through findOrCreate
+    await Coupon.bulkCreate(coupons, {
+      updateOnDuplicate: ["discount", "is_active", "updated_at"],
+    });
 
     console.log("✅ Coupons synchronized successfully.");
   } catch (error) {
     console.error("❌ Error synchronizing coupons:", error);
+    // Re-throw error so the caller knows it failed
+    throw error;
   }
 };
 
