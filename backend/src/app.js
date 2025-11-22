@@ -61,12 +61,11 @@ app.get("/api/db-test", async (req, res) => {
   }
 });
 
-const db = require("./models"); // Import db for syncing
-
 // Manual Seeder Endpoint (For Vercel)
 // This endpoint syncs ONLY the Coupon table and seeds data.
 // For other tables (Users, Bookings), use migrations or the /api/init-db endpoint.
 app.get("/api/seed-coupons", async (req, res) => {
+  const db = require("./models"); // Lazy load database
   try {
     console.log("🔄 Syncing Coupon table...");
     // Only sync Coupon model to avoid timeout
@@ -89,6 +88,7 @@ app.get("/api/seed-coupons", async (req, res) => {
 
 // Database Migration Runner (Use this ONCE after deployment to create all tables)
 app.get("/api/run-migrations", async (req, res) => {
+  const db = require("./models"); // Lazy load database
   try {
     console.log("🔄 Running database migrations...");
     const queryInterface = db.sequelize.getQueryInterface();
