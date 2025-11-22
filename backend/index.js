@@ -31,7 +31,6 @@ module.exports = async (req, res) => {
       } catch (dbError) {
         console.error("❌ Vercel: Database connection failed:", dbError);
       }
-
       handler = serverless(app);
     }
 
