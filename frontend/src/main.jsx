@@ -1,5 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import '@mantine/core/styles.css'; // Import Mantine styles
 import './index.css'
 import App from './App.jsx'
 import { BrowserRouter } from 'react-router-dom'
@@ -7,7 +8,7 @@ import { MantineProvider } from '@mantine/core';
 
 createRoot(document.getElementById('root')).render(
   <BrowserRouter>
-    <MantineProvider withGlobalStyles withNormalizeCSS>
+    <MantineProvider>
       <App />
     </MantineProvider>
   </BrowserRouter>,
