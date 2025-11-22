@@ -17,23 +17,9 @@ module.exports = async (req, res) => {
 
   try {
     if (!handler) {
-      console.log("🚀 Starting Cold Boot...");
-      // Lazy load dependencies
       const app = require('./src/app');
-      const db = require('./src/models');
-
-      // Attempt DB connection (Skip for health check to avoid timeouts)
-      // Note: Since we handle /api/health above, this logic only runs for other routes
-      try {
-        await db.sequelize.authenticate();
-        await db.sequelize.sync({ alter: true });
-        console.log("✅ Vercel: Database connected and synced");
-      } catch (dbError) {
-        console.error("❌ Vercel: Database connection failed:", dbError);
-      }
       handler = serverless(app);
     }
-
     return await handler(req, res);
   } catch (error) {
     console.error("CRITICAL STARTUP ERROR:", error);
