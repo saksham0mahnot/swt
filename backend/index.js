@@ -1,25 +1,35 @@
 const serverless = require('serverless-http');
-const app = require('./src/app');
-const db = require('./src/models');
 
-// Ensure DB is synced on cold start
-let isSynced = false;
-const syncDb = async () => {
-  if (!isSynced) {
-    try {
-      await db.sequelize.authenticate();
-      await db.sequelize.sync({ alter: true });
-      isSynced = true;
-      console.log("✅ Vercel: Database connected and synced");
-    } catch (error) {
-      console.error("❌ Vercel: Database connection failed:", error);
-    }
-  }
-};
-
-const handler = serverless(app);
+let handler;
 
 module.exports = async (req, res) => {
-  await syncDb();
-  return handler(req, res);
+  try {
+    if (!handler) {
+      // Lazy load dependencies to catch top-level errors
+      const app = require('./src/app');
+      const db = require('./src/models');
+
+      // Attempt DB connection
+      try {
+        await db.sequelize.authenticate();
+        await db.sequelize.sync({ alter: true });
+        console.log("✅ Vercel: Database connected and synced");
+      } catch (dbError) {
+        console.error("❌ Vercel: Database connection failed:", dbError);
+        // Continue to allow health check to work even if DB fails
+      }
+
+      handler = serverless(app);
+    }
+
+    return await handler(req, res);
+  } catch (error) {
+    console.error("CRITICAL STARTUP ERROR:", error);
+    res.status(500).json({
+      status: "error",
+      message: "Backend failed to start",
+      details: error.message,
+      stack: error.stack
+    });
+  }
 };
