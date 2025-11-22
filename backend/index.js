@@ -9,14 +9,17 @@ module.exports = async (req, res) => {
       const app = require('./src/app');
       const db = require('./src/models');
 
-      // Attempt DB connection
-      try {
-        await db.sequelize.authenticate();
-        await db.sequelize.sync({ alter: true });
-        console.log("✅ Vercel: Database connected and synced");
-      } catch (dbError) {
-        console.error("❌ Vercel: Database connection failed:", dbError);
-        // Continue to allow health check to work even if DB fails
+      // Attempt DB connection (Skip for health check to avoid timeouts)
+      if (!req.url.includes('/api/health')) {
+        try {
+          await db.sequelize.authenticate();
+          await db.sequelize.sync({ alter: true });
+          console.log("✅ Vercel: Database connected and synced");
+        } catch (dbError) {
+          console.error("❌ Vercel: Database connection failed:", dbError);
+        }
+      } else {
+         console.log("ℹ️ Vercel: Skipping DB sync for health check");
       }
 
       handler = serverless(app);
