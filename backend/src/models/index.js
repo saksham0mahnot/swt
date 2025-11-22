@@ -9,7 +9,12 @@ const env = process.env.NODE_ENV || "development";
 const config = require(__dirname + "/../config/config.js")[env];
 const db = {}; //DB
 
+const mysql2 = require('mysql2'); // Explicit require for Vercel bundling
+
 let sequelize;
+// Force Sequelize to use the bundled mysql2 module
+config.dialectModule = mysql2;
+
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {
