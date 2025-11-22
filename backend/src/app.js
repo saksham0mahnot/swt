@@ -38,16 +38,19 @@ app.use("/api/web/", uploadRouter);
 app.use("/api/web/", paymentRouter);
 
 // Serve frontend static files
-const frontendDistPath = path.join(__dirname, "../../frontend/dist");
-app.use(express.static(frontendDistPath));
+// Serve frontend static files ONLY if not in Vercel (Vercel handles this via vercel.json)
+if (process.env.VERCEL !== "1") {
+  const frontendDistPath = path.join(__dirname, "../../frontend/dist");
+  app.use(express.static(frontendDistPath));
 
-// SPA fallback for non-API routes
-app.use((req, res, next) => {
-  if (req.path.startsWith("/api")) {
-    return next();
-  }
-  res.sendFile(path.join(frontendDistPath, "index.html"));
-});
+  // SPA fallback for non-API routes
+  app.use((req, res, next) => {
+    if (req.path.startsWith("/api")) {
+      return next();
+    }
+    res.sendFile(path.join(frontendDistPath, "index.html"));
+  });
+}
 
 // Error handling middleware
 app.use((err, req, res, next) => {
