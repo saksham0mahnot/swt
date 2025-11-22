@@ -13,9 +13,19 @@ const paymentRouter = require("./routes/payment.route.js");
 dotenv.config();
 
 const app = express();
+
+// Health Check Endpoint
+app.get("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok", message: "Backend is running" });
+});
+
 // Immediately-invoked async function to seed coupons on startup
 (async () => {
-  await seedCoupons();
+  try {
+    await seedCoupons();
+  } catch (error) {
+    console.error("Seeding failed (non-fatal):", error.message);
+  }
 })();
 
 app.use(
