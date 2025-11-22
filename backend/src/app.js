@@ -22,13 +22,14 @@ app.get("/api/health", (req, res) => {
 const db = require("./models"); // Import db for syncing
 
 // Manual Seeder Endpoint (For Vercel)
-// This endpoint acts as a "Deploy & Init" trigger.
-// It syncs the ENTIRE database (creating Users, Bookings, etc. tables) and then seeds coupons.
+// This endpoint syncs ONLY the Coupon table and seeds data.
+// For other tables (Users, Bookings), use migrations or the /api/init-db endpoint.
 app.get("/api/seed-coupons", async (req, res) => {
   try {
-    console.log("🔄 Starting Database Sync...");
-    await db.sequelize.sync({ alter: true }); // Creates/Updates ALL tables
-    console.log("✅ Database Synced");
+    console.log("🔄 Syncing Coupon table...");
+    // Only sync Coupon model to avoid timeout
+    await db.Coupon.sync(); // Creates table if it doesn't exist (fast)
+    console.log("✅ Coupon table ready");
 
     console.log("🌱 Seeding Coupons...");
     await seedCoupons();
@@ -36,11 +37,47 @@ app.get("/api/seed-coupons", async (req, res) => {
 
     res.status(200).json({ 
       status: "ok", 
-      message: "Database synced (Tables created) and Coupons seeded successfully" 
+      message: "Coupon table synced and coupons seeded successfully" 
     });
   } catch (error) {
     console.error("Manual seeding/sync failed:", error);
     res.status(500).json({ status: "error", message: error.message, stack: error.stack });
+  }
+});
+
+// Database Migration Runner (Use this ONCE after deployment to create all tables)
+app.get("/api/run-migrations", async (req, res) => {
+  try {
+    console.log("🔄 Running database migrations...");
+    const queryInterface = db.sequelize.getQueryInterface();
+    
+    // Import migrations
+    const usersMigration = require("./migrations/20250607124422-createTable_users");
+    const bookingsMigration = require("./migrations/20250607124423-createTable_bookings");
+    const couponsMigration = require("./migrations/20250607124424-create-coupons");
+    
+    // Run migrations in order
+    await usersMigration.up(queryInterface, db.Sequelize);
+    console.log("✅ Users table created");
+    
+    await bookingsMigration.up(queryInterface, db.Sequelize);
+    console.log("✅ Bookings table created");
+    
+    await couponsMigration.up(queryInterface, db.Sequelize);
+    console.log("✅ Coupons table created");
+
+    res.status(200).json({ 
+      status: "ok", 
+      message: "All migrations completed. Database is ready! Now visit /api/seed-coupons to seed coupon data." 
+    });
+  } catch (error) {
+    console.error("Migration failed:", error);
+    res.status(500).json({ 
+      status: "error", 
+      message: error.message, 
+      stack: error.stack,
+      hint: "If tables already exist, this is expected. You can ignore this error."
+    });
   }
 });
 
