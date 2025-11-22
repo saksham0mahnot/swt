@@ -19,14 +19,28 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok", message: "Backend is running" });
 });
 
+const db = require("./models"); // Import db for syncing
+
 // Manual Seeder Endpoint (For Vercel)
+// This endpoint acts as a "Deploy & Init" trigger.
+// It syncs the ENTIRE database (creating Users, Bookings, etc. tables) and then seeds coupons.
 app.get("/api/seed-coupons", async (req, res) => {
   try {
+    console.log("🔄 Starting Database Sync...");
+    await db.sequelize.sync({ alter: true }); // Creates/Updates ALL tables
+    console.log("✅ Database Synced");
+
+    console.log("🌱 Seeding Coupons...");
     await seedCoupons();
-    res.status(200).json({ status: "ok", message: "Coupons seeded successfully" });
+    console.log("✅ Coupons Seeded");
+
+    res.status(200).json({ 
+      status: "ok", 
+      message: "Database synced (Tables created) and Coupons seeded successfully" 
+    });
   } catch (error) {
-    console.error("Manual seeding failed:", error);
-    res.status(500).json({ status: "error", message: error.message });
+    console.error("Manual seeding/sync failed:", error);
+    res.status(500).json({ status: "error", message: error.message, stack: error.stack });
   }
 });
 
