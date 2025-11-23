@@ -15,6 +15,24 @@ let sequelize;
 // Force Sequelize to use the bundled mysql2 module
 config.dialectModule = mysql2;
 
+// Add retry logic for serverless cold starts
+config.retry = {
+  max: 3,
+  timeout: 3000,
+  match: [
+    /SequelizeConnectionError/,
+    /SequelizeConnectionRefusedError/,
+    /SequelizeHostNotFoundError/,
+    /SequelizeHostNotReachableError/,
+    /SequelizeInvalidConnectionError/,
+    /SequelizeConnectionTimedOutError/,
+    /ETIMEDOUT/,
+    /EHOSTUNREACH/,
+    /ECONNREFUSED/,
+    /ENOTFOUND/,
+  ],
+};
+
 if (config.use_env_variable) {
   sequelize = new Sequelize(process.env[config.use_env_variable], config);
 } else {

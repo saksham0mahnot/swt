@@ -32,15 +32,19 @@ module.exports = {
     host: process.env.DB_HOST,
     port: process.env.DB_PORT || 3306,
     dialect: "mysql",
-    logging: console.log, // Enable logging to see errors
+    logging: false, // Disable logging in production for performance
     dialectOptions: {
-      connectTimeout: 10000, // 10 seconds
+      connectTimeout: 3000, // 3 seconds - fail fast
+      // Enable connection reuse
+      enableKeepAlive: true,
+      keepAliveInitialDelay: 0,
     },
     pool: {
-      max: 5,
-      min: 0,
-      acquire: 10000, // 10 seconds
-      idle: 10000,
+      max: 2, // Reduced for serverless
+      min: 0, // No minimum connections
+      acquire: 3000, // 3 seconds - fail fast on Vercel
+      idle: 1000, // Release idle connections quickly
+      evict: 1000, // Check for idle connections every second
     },
   },
 };
