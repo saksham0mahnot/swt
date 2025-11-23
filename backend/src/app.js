@@ -3,8 +3,7 @@ const dotenv = require("dotenv");
 const cors = require("cors");
 const path = require("path");
 
-// Import the new coupon seeder
-const seedCoupons = require("./utils/couponSeeder");
+// Routes - these should NOT load database on import
 const userWebRoutes = require("./routes/users.route");
 const bookingsRouter = require("./routes/booking.route.js");
 const uploadRouter = require("./routes/upload.route.js");
@@ -21,7 +20,9 @@ app.get("/api/health", (req, res) => {
 
 // Database Connection Test Endpoint
 app.get("/api/db-test", async (req, res) => {
-  const db = require("./models");
+  const startTime = Date.now();
+  let db;
+  
   try {
     console.log("🔍 Testing database connection...");
     console.log("Environment:", process.env.NODE_ENV || "development");
@@ -31,28 +32,47 @@ app.get("/api/db-test", async (req, res) => {
     console.log("DB User:", process.env.DB_USER || "NOT SET");
     console.log("DB Password:", process.env.DB_PASSWORD ? "SET" : "NOT SET");
     
+    // Lazy load database to measure load time
+    const loadStart = Date.now();
+    db = require("./models");
+    const loadTime = Date.now() - loadStart;
+    console.log(`📦 Models loaded in ${loadTime}ms`);
+    
     // Test connection with timeout
     const timeoutPromise = new Promise((_, reject) => 
       setTimeout(() => reject(new Error("Connection timeout after 8 seconds")), 8000)
     );
     
+    const connectStart = Date.now();
     await Promise.race([
       db.sequelize.authenticate(),
       timeoutPromise
     ]);
+    const connectTime = Date.now() - connectStart;
     
-    console.log("✅ Database connection successful");
+    console.log(`✅ Database connection successful in ${connectTime}ms`);
+    
+    const totalTime = Date.now() - startTime;
     res.status(200).json({ 
       status: "ok", 
       message: "Database connection successful",
+      timing: {
+        modelLoad: `${loadTime}ms`,
+        connection: `${connectTime}ms`,
+        total: `${totalTime}ms`
+      },
       env: process.env.NODE_ENV || "development",
-      host: process.env.DB_HOST || "NOT SET"
+      host: process.env.DB_HOST || "NOT SET",
+      port: process.env.DB_PORT || "NOT SET"
     });
   } catch (error) {
-    console.error("❌ Database connection failed:", error);
+    const totalTime = Date.now() - startTime;
+    console.error(`❌ Database connection failed after ${totalTime}ms:`, error);
     res.status(500).json({ 
       status: "error", 
       message: error.message,
+      errorName: error.name,
+      totalTime: `${totalTime}ms`,
       env: process.env.NODE_ENV || "development",
       host: process.env.DB_HOST || "NOT SET",
       port: process.env.DB_PORT || "NOT SET",
@@ -129,6 +149,8 @@ app.get("/api/run-migrations", async (req, res) => {
 if (process.env.VERCEL !== "1") {
   (async () => {
     try {
+      // Lazy load to avoid database connection on app startup
+      const seedCoupons = require("./utils/couponSeeder");
       await seedCoupons();
     } catch (error) {
       console.error("Seeding failed (non-fatal):", error.message);
