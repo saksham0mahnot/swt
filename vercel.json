@@ -5,7 +5,11 @@
       "src": "backend/index.js",
       "use": "@vercel/node",
       "config": {
-        "includeFiles": ["backend/src/**", "backend/package.json"]
+        "maxDuration": 10,
+        "includeFiles": [
+          "backend/src/**",
+          "backend/package.json"
+        ]
       }
     },
     {
@@ -16,22 +20,22 @@
       }
     }
   ],
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/(.*)",
-      "destination": "/backend/index.js"
+      "src": "/api/(.*)",
+      "dest": "/backend/index.js"
     },
     {
-      "source": "/assets/(.*)",
-      "destination": "/frontend/assets/$1"
+      "src": "/assets/(.*)",
+      "dest": "/frontend/assets/$1"
     },
     {
-      "source": "/(.*)\\.(png|jpg|jpeg|svg|ico|json)",
-      "destination": "/frontend/$1.$2"
+      "src": "/(.*)\\.(png|jpg|jpeg|svg|ico|json|webp)",
+      "dest": "/frontend/$1.$2"
     },
     {
-      "source": "/(.*)",
-      "destination": "/frontend/index.html"
+      "src": "/(.*)",
+      "dest": "/frontend/index.html"
     }
   ]
 }
