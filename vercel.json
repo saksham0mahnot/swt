@@ -6,6 +6,10 @@
       "use": "@vercel/node"
     },
     {
+      "src": "backend/api/validate-coupon.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "backend/index.js",
       "use": "@vercel/node",
       "config": {
@@ -28,6 +32,10 @@
     {
       "src": "/api/test-direct",
       "dest": "/backend/api/test-direct-db.js"
+    },
+    {
+      "src": "/api/web/validateCoupon",
+      "dest": "/backend/api/validate-coupon.js"
     },
     {
       "src": "/api/(.*)",

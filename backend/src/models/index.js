@@ -27,25 +27,23 @@ function initializeDatabase() {
   // Force Sequelize to use the bundled mysql2 module
   config.dialectModule = mysql2;
 
-  // Add retry logic for serverless cold starts (only in production)
-  if (env === 'production') {
-    config.retry = {
-      max: 2,
-      timeout: 5000,
-      match: [
-        /SequelizeConnectionError/,
-        /SequelizeConnectionRefusedError/,
-        /SequelizeHostNotFoundError/,
-        /SequelizeHostNotReachableError/,
-        /SequelizeInvalidConnectionError/,
-        /SequelizeConnectionTimedOutError/,
-        /ETIMEDOUT/,
-        /EHOSTUNREACH/,
-        /ECONNREFUSED/,
-        /ENOTFOUND/,
-      ],
-    };
-  }
+  // Add retry logic for serverless cold starts
+  config.retry = {
+    max: 3,
+    timeout: 3000,
+    match: [
+      /SequelizeConnectionError/,
+      /SequelizeConnectionRefusedError/,
+      /SequelizeHostNotFoundError/,
+      /SequelizeHostNotReachableError/,
+      /SequelizeInvalidConnectionError/,
+      /SequelizeConnectionTimedOutError/,
+      /ETIMEDOUT/,
+      /EHOSTUNREACH/,
+      /ECONNREFUSED/,
+      /ENOTFOUND/,
+    ],
+  };
 
   let sequelize;
   if (config.use_env_variable) {
