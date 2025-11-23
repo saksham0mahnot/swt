@@ -30,14 +30,16 @@ module.exports = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     host: process.env.DB_HOST,
+    port: process.env.DB_PORT || 3306,
     dialect: "mysql",
+    logging: console.log, // Enable logging to see errors
     dialectOptions: {
-      connectTimeout: 5000, // 5 seconds
+      connectTimeout: 10000, // 10 seconds
     },
     pool: {
       max: 5,
       min: 0,
-      acquire: 5000, // 5 seconds (fail fast on Vercel)
+      acquire: 10000, // 10 seconds
       idle: 10000,
     },
   },
