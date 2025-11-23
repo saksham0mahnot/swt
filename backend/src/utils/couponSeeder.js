@@ -1,5 +1,4 @@
 const { Coupon } = require("../models");
-const { Op } = require("sequelize");
 
 // This is your source of truth for all coupons.
 // Add or remove coupons from this list as needed.
@@ -22,23 +21,13 @@ const coupons = [
 
 /**
  * Synchronizes the database with the coupons list above.
- * It deletes any coupons that are not in the list and adds any new ones.
+ * It adds new coupons or updates existing ones, but does NOT delete any.
+ * This allows you to manually add coupons in the database.
  */
 const syncCoupons = async () => {
   try {
-    const couponCodesInList = coupons.map((c) => c.code);
-
-    // 1. Delete coupons that are in the DB but not in our list
-    await Coupon.destroy({
-      where: {
-        code: {
-          [Op.notIn]: couponCodesInList,
-        },
-      },
-    });
-
-    // 2. Bulk Create or Update coupons
-    // This is much faster than looping through findOrCreate
+    // Only add or update coupons - don't delete any
+    // This allows manual coupons to persist
     await Coupon.bulkCreate(coupons, {
       updateOnDuplicate: ["discount", "is_active", "updated_at"],
     });

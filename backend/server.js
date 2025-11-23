@@ -9,6 +9,12 @@ const couponSeeder = require("./src/seeders/20250721185330-add-coupons");
 const PORT = process.env.PORT || 7400;
 
 const runSeeders = async () => {
+  // Skip seeding if SKIP_SEED is set
+  if (process.env.SKIP_SEED === 'true') {
+    console.log('⏭️  Skipping seeders (SKIP_SEED=true)');
+    return;
+  }
+
   try {
     console.log("🌱 Running coupons seeder...");
     await couponSeeder.up(db.sequelize.getQueryInterface(), db.Sequelize);
