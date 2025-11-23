@@ -2,6 +2,10 @@
   "version": 2,
   "builds": [
     {
+      "src": "backend/api/test-direct-db.js",
+      "use": "@vercel/node"
+    },
+    {
       "src": "backend/index.js",
       "use": "@vercel/node",
       "config": {
@@ -21,6 +25,10 @@
     }
   ],
   "routes": [
+    {
+      "src": "/api/test-direct",
+      "dest": "/backend/api/test-direct-db.js"
+    },
     {
       "src": "/api/(.*)",
       "dest": "/backend/index.js"
