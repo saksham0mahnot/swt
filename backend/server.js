@@ -24,10 +24,11 @@ const startServer = async () => {
     await db.sequelize.authenticate();
     console.log("✅ Connected to Database");
 
-    await db.sequelize.sync({ alter: true });
-    console.log("📊 Database synchronized successfully");
+    // Don't use sync({ alter: true }) - it causes issues with existing databases
+    // Use migrations instead for schema changes
+    console.log("📊 Database connection ready");
 
-    // Run coupons seeder after database sync
+    // Run coupons seeder
     await runSeeders();
 
     app.listen(PORT, () => {
