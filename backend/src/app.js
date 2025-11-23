@@ -26,6 +26,7 @@ app.get("/api/db-test", async (req, res) => {
     console.log("🔍 Testing database connection...");
     console.log("Environment:", process.env.NODE_ENV || "development");
     console.log("DB Host:", process.env.DB_HOST || "NOT SET");
+    console.log("DB Port:", process.env.DB_PORT || "NOT SET");
     console.log("DB Name:", process.env.DB_NAME || "NOT SET");
     console.log("DB User:", process.env.DB_USER || "NOT SET");
     console.log("DB Password:", process.env.DB_PASSWORD ? "SET" : "NOT SET");
@@ -54,6 +55,7 @@ app.get("/api/db-test", async (req, res) => {
       message: error.message,
       env: process.env.NODE_ENV || "development",
       host: process.env.DB_HOST || "NOT SET",
+      port: process.env.DB_PORT || "NOT SET",
       dbName: process.env.DB_NAME || "NOT SET",
       dbUser: process.env.DB_USER || "NOT SET",
       dbPasswordSet: process.env.DB_PASSWORD ? "YES" : "NO"
