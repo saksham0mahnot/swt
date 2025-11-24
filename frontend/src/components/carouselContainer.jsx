@@ -47,7 +47,7 @@ export default function CarouselContainer({ onBookNowClick }) {
   });
 
   useEffect(() => {
-    const targetDate = new Date("2025-07-01T00:00:00").getTime();
+    const targetDate = new Date("2026-12-15T00:00:00").getTime();
 
     const updateCountdown = () => {
       const now = new Date().getTime();
